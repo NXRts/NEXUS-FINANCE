@@ -33,7 +33,10 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'viewer';
+  role: 'admin' | 'editor' | 'viewer';
+  department: string;
+  lastLogin: string;
+  status: 'active' | 'inactive';
   avatar?: string;
 }
 
