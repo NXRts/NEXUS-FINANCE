@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
-import { LayoutDashboard, TrendingUp, TrendingDown, Layers, User } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, TrendingDown, Layers, User, Wallet } from 'lucide-react';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
@@ -14,48 +14,62 @@ export function Sidebar() {
   const location = useLocation();
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full">
-      <div className="p-6 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
-          <span className="material-symbols-outlined">account_balance_wallet</span>
+    <aside className="w-72 flex-shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col h-full transition-all duration-300">
+      {/* Header */}
+      <div className="p-8 flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+          <Wallet className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">FIN TRACKER</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Modern Admin</p>
+          <h1 className="text-xl font-extrabold tracking-tight text-white leading-tight">FIN TRACKER</h1>
+          <p className="text-xs text-slate-400 font-medium tracking-wide">Modern Admin</p>
         </div>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      {/* Navigation */}
+      <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
+          const Icon = item.icon;
+          
           return (
             <Link
               key={item.label}
               to={item.href}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                "group flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 relative overflow-hidden",
                 isActive 
-                  ? "active-nav" 
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  ? "bg-primary/10 text-primary" 
+                  : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-100"
               )}
             >
-             <span className="material-symbols-outlined">
-                {item.label === 'Dashboard' ? 'dashboard' :
-                 item.label === 'Pemasukan' ? 'trending_up' :
-                 item.label === 'Pengeluaran' ? 'trending_down' :
-                 item.label === 'Kategori' ? 'category' : 'person'}
-             </span>
-              <span className={cn("font-medium text-sm", isActive && "font-semibold")}>{item.label}</span>
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full shadow-[0_0_12px_rgba(0,122,108,0.4)]"></div>
+              )}
+              
+              <Icon className={cn("w-5 h-5 transition-colors", isActive ? "text-primary" : "text-slate-500 group-hover:text-slate-300")} />
+              <span className={cn("font-medium text-sm tracking-wide", isActive && "font-bold")}>{item.label}</span>
+              
+              {isActive && (
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary/50"></div>
+              )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-        <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl">
-          <p className="text-xs font-bold text-primary uppercase tracking-wider mb-2">Pro Plan</p>
-          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">Unlock advanced analytics and reports.</p>
-          <button className="w-full py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-colors">Upgrade Now</button>
+      {/* Pro Plan Card */}
+      <div className="p-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700/50 relative overflow-hidden group">
+          {/* Decorative glow */}
+           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+           
+           <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-2">PRO PLAN</h4>
+           <p className="text-xs text-slate-400 leading-relaxed mb-4">Unlock advanced analytics, export capabilities, and priority support.</p>
+           
+           <button className="w-full py-3 bg-primary text-white text-xs font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:bg-primary/90 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+             <span>Upgrade Now</span>
+           </button>
         </div>
       </div>
     </aside>
