@@ -14,6 +14,7 @@ export interface Expense {
   category: string;
   amount: number;
   date: string;
+  status: 'Dibayar' | 'Menunggu' | 'Batal';
   proofOfPayment?: string;
   description?: string;
 }
@@ -22,6 +23,10 @@ export interface Category {
   id: string;
   name: string;
   type: 'income' | 'expense';
+  status: 'active' | 'inactive';
+  icon?: string; // e.g. 'briefcase', 'star', 'chart-bar'
+  color?: string; // e.g. 'bg-green-100 text-green-600'
+  itemCount?: number;
 }
 
 export interface User {
