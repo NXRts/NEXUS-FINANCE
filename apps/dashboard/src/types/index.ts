@@ -4,6 +4,7 @@ export interface Income {
   clientName: string;
   amount: number;
   date: string;
+  status: 'Lunas' | 'Pending' | 'Batal';
   description?: string;
 }
 
