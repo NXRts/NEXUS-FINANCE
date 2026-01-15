@@ -7,6 +7,7 @@ const navItems = [
   { icon: TrendingUp, label: 'Pemasukan', href: '/pemasukan' },
   { icon: TrendingDown, label: 'Pengeluaran', href: '/pengeluaran' },
   { icon: Layers, label: 'Kategori', href: '/kategori' },
+  { icon: TrendingUp, label: 'Reports', href: '/reports' },
   { icon: User, label: 'User', href: '/user' },
 ];
 

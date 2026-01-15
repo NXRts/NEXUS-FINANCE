@@ -7,6 +7,7 @@ import { IncomePage } from "./pages/IncomePage";
 import { ExpensePage } from "./pages/ExpensePage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { UserPage } from "./pages/UserPage";
+import { ReportsPage } from './pages/ReportsPage';
 
 function App() {
   return (
@@ -31,6 +32,11 @@ function App() {
         <Route path="/kategori" element={
             <DashboardLayout>
                 <CategoryPage />
+            </DashboardLayout>
+        } />
+        <Route path="/reports" element={
+            <DashboardLayout>
+                <ReportsPage />
             </DashboardLayout>
         } />
         <Route path="/user" element={
