@@ -9,7 +9,13 @@ export function IncomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeActionId, setActiveActionId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showLast30Days, setShowLast30Days] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [sortConfig, setSortConfig] = useState<{ key: 'date' | 'amount', direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
+  
   const actionMenuRef = useRef<HTMLDivElement>(null);
+  const filterMenuRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     clientName: '',
     amount: '',
@@ -23,6 +29,9 @@ export function IncomePage() {
     const handleClickOutside = (event: MouseEvent) => {
       if (actionMenuRef.current && !actionMenuRef.current.contains(event.target as Node)) {
         setActiveActionId(null);
+      }
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target as Node)) {
+        setIsFilterOpen(false);
       }
     };
 
@@ -109,6 +118,32 @@ export function IncomePage() {
     setActiveActionId(activeActionId === id ? null : id);
   };
 
+  const filteredIncomes = incomes.filter(income => {
+    const matchesSearch = 
+        income.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        income.invoiceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        income.status.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (showLast30Days) {
+        const incomeDate = new Date(income.date);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        return matchesSearch && incomeDate >= thirtyDaysAgo;
+    }
+
+    return matchesSearch;
+  }).sort((a, b) => {
+      if (sortConfig.key === 'date') {
+          return sortConfig.direction === 'desc' 
+            ? new Date(b.date).getTime() - new Date(a.date).getTime()
+            : new Date(a.date).getTime() - new Date(b.date).getTime();
+      } else {
+          return sortConfig.direction === 'desc'
+            ? b.amount - a.amount
+            : a.amount - b.amount;
+      }
+  });
+
   return (
     <div className="space-y-8 relative">
       {/* Header Section */}
@@ -133,18 +168,90 @@ export function IncomePage() {
           <input 
             type="text" 
             placeholder="Cari klien, ID invoice, atau status..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-400"
           />
         </div>
         <div className="flex gap-4">
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-all">
+            <button 
+                onClick={() => setShowLast30Days(!showLast30Days)}
+                className={cn(
+                    "flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold transition-all",
+                    showLast30Days 
+                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" 
+                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50"
+                )}
+            >
                 <Calendar className="w-5 h-5" />
                 <span>30 Hari Terakhir</span>
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all">
-                <Filter className="w-5 h-5" />
-                <span>Filter</span>
-            </button>
+            <div className="relative">
+                <button 
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    className={cn(
+                        "flex items-center gap-2 px-6 py-3 rounded-xl border text-sm font-bold transition-all",
+                         isFilterOpen
+                            ? "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white"
+                            : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50"
+                    )}
+                >
+                    <Filter className="w-5 h-5" />
+                    <span>Filter</span>
+                </button>
+
+                 {isFilterOpen && (
+                    <div 
+                        ref={filterMenuRef}
+                        className="absolute right-0 top-full mt-2 z-50 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 py-2 animate-in fade-in zoom-in-95 duration-200"
+                    >
+                        <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Urutkan</span>
+                        </div>
+                        <button 
+                            onClick={() => { setSortConfig({ key: 'date', direction: 'desc' }); setIsFilterOpen(false); }}
+                            className={cn(
+                                "w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between",
+                                sortConfig.key === 'date' && sortConfig.direction === 'desc' ? "text-primary bg-primary/5" : "text-slate-600 dark:text-slate-300"
+                            )}
+                        >
+                            <span>Tanggal (Terbaru)</span>
+                            {sortConfig.key === 'date' && sortConfig.direction === 'desc' && <div className="w-2 h-2 rounded-full bg-primary"></div>}
+                        </button>
+                        <button 
+                            onClick={() => { setSortConfig({ key: 'date', direction: 'asc' }); setIsFilterOpen(false); }}
+                            className={cn(
+                                "w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between",
+                                sortConfig.key === 'date' && sortConfig.direction === 'asc' ? "text-primary bg-primary/5" : "text-slate-600 dark:text-slate-300"
+                            )}
+                        >
+                            <span>Tanggal (Terlama)</span>
+                            {sortConfig.key === 'date' && sortConfig.direction === 'asc' && <div className="w-2 h-2 rounded-full bg-primary"></div>}
+                        </button>
+                        <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
+                        <button 
+                            onClick={() => { setSortConfig({ key: 'amount', direction: 'desc' }); setIsFilterOpen(false); }}
+                            className={cn(
+                                "w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between",
+                                sortConfig.key === 'amount' && sortConfig.direction === 'desc' ? "text-primary bg-primary/5" : "text-slate-600 dark:text-slate-300"
+                            )}
+                        >
+                            <span>Jumlah (Tertinggi)</span>
+                            {sortConfig.key === 'amount' && sortConfig.direction === 'desc' && <div className="w-2 h-2 rounded-full bg-primary"></div>}
+                        </button>
+                        <button 
+                            onClick={() => { setSortConfig({ key: 'amount', direction: 'asc' }); setIsFilterOpen(false); }}
+                            className={cn(
+                                "w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between",
+                                sortConfig.key === 'amount' && sortConfig.direction === 'asc' ? "text-primary bg-primary/5" : "text-slate-600 dark:text-slate-300"
+                            )}
+                        >
+                            <span>Jumlah (Terendah)</span>
+                            {sortConfig.key === 'amount' && sortConfig.direction === 'asc' && <div className="w-2 h-2 rounded-full bg-primary"></div>}
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
       </div>
 
@@ -163,7 +270,7 @@ export function IncomePage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {incomes.map((income) => (
+              {filteredIncomes.map((income) => (
                 <tr key={income.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group relative">
                   <td className="px-6 py-4 text-sm font-bold text-primary">
                     {income.invoiceId}
@@ -226,10 +333,10 @@ export function IncomePage() {
                   </td>
                 </tr>
               ))}
-              {incomes.length === 0 && (
+              {filteredIncomes.length === 0 && (
                  <tr>
                     <td colSpan={6} className="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
-                        Belum ada data pemasukan. Klik "Tambah Pemasukan" untuk membuat baru.
+                        {searchQuery ? 'Tidak ada data yang cocok dengan pencarian Anda.' : 'Belum ada data pemasukan. Klik "Tambah Pemasukan" untuk membuat baru.'}
                     </td>
                  </tr>
               )}
@@ -240,7 +347,7 @@ export function IncomePage() {
         {/* Pagination - Keep existing code */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{incomes.length > 0 ? 1 : 0}-{Math.min(incomes.length, 5)}</span> dari <span className="font-bold text-slate-900 dark:text-white">{incomes.length}</span> data
+                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{filteredIncomes.length > 0 ? 1 : 0}-{Math.min(filteredIncomes.length, 5)}</span> dari <span className="font-bold text-slate-900 dark:text-white">{filteredIncomes.length}</span> data
             </p>
             <div className="flex items-center gap-2">
                 <button className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary disabled:opacity-50">
