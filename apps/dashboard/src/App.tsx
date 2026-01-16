@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LoginPage } from "./pages/LoginPage";
+import { storage } from './lib/storage';
 
 import { IncomePage } from "./pages/IncomePage";
 import { ExpensePage } from "./pages/ExpensePage";
@@ -10,6 +12,10 @@ import { UserPage } from "./pages/UserPage";
 import { ReportsPage } from './pages/ReportsPage';
 
 function App() {
+  useEffect(() => {
+    storage.initialize();
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

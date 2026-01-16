@@ -1,17 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Filter, Download, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import type { Expense } from '../types';
 import { cn } from '../lib/utils';
-
-const mockExpenses: Expense[] = [
-  { id: '1', vendor: 'Amazon Web Services', category: 'Technology', amount: 18250000, date: '12 Okt 2023', status: 'Dibayar', description: 'Cloud Infrastructure', proofOfPayment: 'receipt.pdf' },
-  { id: '2', vendor: 'Office Space Rent', category: 'Utility', amount: 15000000, date: '01 Okt 2023', status: 'Dibayar', description: 'South Jakarta Tower', proofOfPayment: 'receipt.pdf' },
-  { id: '3', vendor: 'Facebook Ads', category: 'Marketing', amount: 8450000, date: '08 Okt 2023', status: 'Menunggu', description: 'Q4 Campaign', proofOfPayment: 'receipt.pdf' },
-  { id: '4', vendor: 'Slack Subscription', category: 'Technology', amount: 3500000, date: '15 Okt 2023', status: 'Dibayar', description: 'Standard Plan', proofOfPayment: 'receipt.pdf' },
-];
+import { storage } from '../lib/storage';
 
 export function ExpensePage() {
-  const [expenses] = useState<Expense[]>(mockExpenses);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  useEffect(() => {
+    setExpenses(storage.getExpenses());
+  }, []);
 
   return (
     <div className="space-y-8">
