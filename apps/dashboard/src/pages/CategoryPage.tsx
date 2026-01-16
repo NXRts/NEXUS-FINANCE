@@ -1,24 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Wallet, TrendingDown, Briefcase, Star, TrendingUp, Coffee, Car, ShoppingBag, FileText } from 'lucide-react';
 import type { Category } from '../types';
 import { cn } from '../lib/utils';
-
-const mockCategories: Category[] = [
-  // Income
-  { id: '1', name: 'Gaji Bulanan', type: 'income', status: 'active', icon: 'briefcase', color: 'emerald' },
-  { id: '2', name: 'Bonus & Insentif', type: 'income', status: 'active', icon: 'star', color: 'emerald' },
-  { id: '3', name: 'Investasi', type: 'income', status: 'active', icon: 'trending-up', color: 'emerald' },
-  
-  // Expense
-  { id: '4', name: 'Makan & Minum', type: 'expense', status: 'active', icon: 'coffee', color: 'rose' },
-  { id: '5', name: 'Transportasi', type: 'expense', status: 'active', icon: 'car', color: 'rose' },
-  { id: '6', name: 'Belanja Rutin', type: 'expense', status: 'active', icon: 'shopping-bag', color: 'rose' },
-  { id: '7', name: 'Tagihan & Air', type: 'expense', status: 'active', icon: 'file-text', color: 'rose' },
-];
+import { storage } from '../lib/storage';
 
 export function CategoryPage() {
-  const [categories] = useState<Category[]>(mockCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState<'income' | 'expense'>('income');
+
+  useEffect(() => {
+    setCategories(storage.getCategories());
+  }, []);
 
   const filteredCategories = categories.filter(c => c.type === activeTab);
 
