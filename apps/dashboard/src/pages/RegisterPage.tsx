@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Lock, Mail, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, ShieldCheck } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
-// Mock data for the mini chart
+// Mock data for the mini chart (same as login for consistency)
 const chartData = [
   { value: 4000 },
   { value: 3000 },
@@ -14,18 +14,26 @@ const chartData = [
   { value: 7000 },
 ];
 
-export function LoginPage() {
+export function RegisterPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate login
-    console.log("Logging in", email, password);
+    // Simulate registration
+    console.log("Registering", formData);
     navigate('/');
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
@@ -53,12 +61,12 @@ export function LoginPage() {
         {/* Main Content */}
         <div className="relative z-10 space-y-12">
             <h1 className="text-5xl font-extrabold leading-tight tracking-tight">
-                Manage your <br/>
-                finances with <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">confidence.</span>
+                Join the future <br/>
+                of financial <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">management.</span>
             </h1>
             <p className="text-slate-300 text-lg max-w-md leading-relaxed">
-                Experience a new standard of personal wealth management. Secure, intuitive, and designed for your growth.
+                Create your account today and start your journey towards financial freedom with our advanced tracking tools.
             </p>
 
             {/* Visual Cards */}
@@ -107,24 +115,41 @@ export function LoginPage() {
         </div>
       </div>
 
-      {/* Right Panel - Login Form */}
+      {/* Right Panel - Register Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 relative">
           <div className="w-full max-w-[420px] space-y-8">
               <div className="text-center lg:text-left">
-                  <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Welcome Back</h2>
-                  <p className="text-slate-500 dark:text-slate-400">Please enter your details to sign in.</p>
+                  <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Create Account</h2>
+                  <p className="text-slate-500 dark:text-slate-400">Sign up to get started with Fin Tracker.</p>
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={handleRegister} className="space-y-5">
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Full Name</label>
+                    <div className="relative group">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                        <input 
+                            type="text" 
+                            name="name"
+                            required
+                            value={formData.name}
+                            onChange={handleChange}
+                            placeholder="John Doe"
+                            className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                        />
+                    </div>
+                </div>
+
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Email Address</label>
                     <div className="relative group">
                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                         <input 
                             type="email" 
+                            name="email"
                             required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={handleChange}
                             placeholder="name@company.com"
                             className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
                         />
@@ -132,17 +157,15 @@ export function LoginPage() {
                 </div>
 
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Password</label>
-                         <a href="#" className="text-xs font-bold text-primary hover:text-primary/80">Forgot password?</a>
-                    </div>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Password</label>
                     <div className="relative group">
                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                          <input 
                             type={showPassword ? "text" : "password"} 
+                            name="password"
                             required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formData.password}
+                            onChange={handleChange}
                             placeholder="••••••••"
                             className="w-full pl-12 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
                         />
@@ -156,19 +179,43 @@ export function LoginPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center">
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Confirm Password</label>
+                    <div className="relative group">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                         <input 
+                            type={showConfirmPassword ? "text" : "password"} 
+                            name="confirmPassword"
+                            required
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            placeholder="••••••••"
+                            className="w-full pl-12 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                        />
+                        <button 
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                        >
+                            {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex items-start pt-2">
                     <input 
-                        id="remember-me" 
+                        id="terms" 
                         type="checkbox" 
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20" 
+                        required
+                        className="w-4 h-4 mt-0.5 rounded border-slate-300 text-primary focus:ring-primary/20" 
                     />
-                    <label htmlFor="remember-me" className="ml-2 text-sm text-slate-500 dark:text-slate-400">Remember me for 30 days</label>
+                    <label htmlFor="terms" className="ml-2 text-sm text-slate-500 dark:text-slate-400">
+                        I agree to the <a href="#" className="font-bold text-[#1e293b] dark:text-white hover:underline">Terms of Service</a> and <a href="#" className="font-bold text-[#1e293b] dark:text-white hover:underline">Privacy Policy</a>
+                    </label>
                 </div>
 
                 <button type="submit" className="w-full py-3.5 bg-[#1e293b] dark:bg-primary text-white font-bold rounded-xl hover:bg-[#1e293b]/90 dark:hover:bg-primary/90 transition-all shadow-lg shadow-slate-900/20 dark:shadow-primary/20 flex items-center justify-center gap-2 group">
-                    <span>Sign In</span>
+                    <span>Create Account</span>
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </button>
               </form>
@@ -184,11 +231,11 @@ export function LoginPage() {
 
               <button className="w-full py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-3">
                   <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-                  <span>Sign in with Google</span>
+                  <span>Sign up with Google</span>
               </button>
 
               <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-                  Don't have an account? <a href="/register" onClick={(e) => {e.preventDefault(); navigate('/register');}} className="font-bold text-[#1e293b] dark:text-white hover:underline">Create an account</a>
+                  Already have an account? <a href="/login" onClick={(e) => {e.preventDefault(); navigate('/login');}} className="font-bold text-[#1e293b] dark:text-white hover:underline">Sign in</a>
               </p>
           </div>
       </div>
