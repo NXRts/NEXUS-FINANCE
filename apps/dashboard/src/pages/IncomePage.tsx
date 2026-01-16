@@ -8,6 +8,7 @@ export function IncomePage() {
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeActionId, setActiveActionId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const actionMenuRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     clientName: '',
@@ -34,28 +35,64 @@ export function IncomePage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleEdit = (income: Income) => {
+      setEditingId(income.id);
+      setFormData({
+          clientName: income.clientName,
+          amount: income.amount.toString(),
+          date: income.date,
+          status: income.status as 'Lunas' | 'Pending' | 'Batal'
+      });
+      setIsModalOpen(true);
+      setActiveActionId(null);
+  };
+
+  const closeModal = () => {
+      setIsModalOpen(false);
+      setEditingId(null);
+      setFormData({
+        clientName: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+        status: 'Pending'
+      });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newIncome: Income = {
-      id: crypto.randomUUID(),
-      invoiceId: `#INV-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-      clientName: formData.clientName,
-      amount: Number(formData.amount),
-      date: formData.date,
-      status: formData.status,
-    };
-
-    const updatedIncomes = [newIncome, ...incomes];
-    setIncomes(updatedIncomes);
-    storage.saveIncomes(updatedIncomes);
     
-    setIsModalOpen(false);
-    setFormData({
-      clientName: '',
-      amount: '',
-      date: new Date().toISOString().split('T')[0],
-      status: 'Pending'
-    });
+    if (editingId) {
+        // Update existing income
+        const updatedIncomes = incomes.map(income => {
+            if (income.id === editingId) {
+                return {
+                    ...income,
+                    clientName: formData.clientName,
+                    amount: Number(formData.amount),
+                    date: formData.date,
+                    status: formData.status
+                };
+            }
+            return income;
+        });
+        setIncomes(updatedIncomes);
+        storage.saveIncomes(updatedIncomes);
+    } else {
+        // Create new income
+        const newIncome: Income = {
+          id: crypto.randomUUID(),
+          invoiceId: `#INV-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+          clientName: formData.clientName,
+          amount: Number(formData.amount),
+          date: formData.date,
+          status: formData.status,
+        };
+        const updatedIncomes = [newIncome, ...incomes];
+        setIncomes(updatedIncomes);
+        storage.saveIncomes(updatedIncomes);
+    }
+    
+    closeModal();
   };
 
   const handleDelete = (id: string) => {
@@ -170,7 +207,10 @@ export function IncomePage() {
                             className="absolute right-10 top-2 z-50 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 py-2 animate-in fade-in zoom-in-95 duration-200"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <button className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 transition-colors">
+                            <button 
+                                onClick={() => handleEdit(income)}
+                                className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 transition-colors"
+                            >
                                 <Edit className="w-4 h-4" />
                                 Edit Data
                             </button>
@@ -247,8 +287,10 @@ export function IncomePage() {
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-100 dark:border-slate-800">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Tambah Pemasukan Baru</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                {editingId ? 'Edit Pemasukan' : 'Tambah Pemasukan Baru'}
+              </h3>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -310,7 +352,7 @@ export function IncomePage() {
               <div className="pt-4 flex gap-3">
                 <button 
                   type="button" 
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={closeModal}
                   className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
                 >
                   Batal
@@ -319,7 +361,7 @@ export function IncomePage() {
                   type="submit" 
                   className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
                 >
-                  Simpan Pemasukan
+                  {editingId ? 'Simpan Perubahan' : 'Simpan Pemasukan'}
                 </button>
               </div>
             </form>
