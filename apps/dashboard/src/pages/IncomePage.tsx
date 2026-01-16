@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Calendar, ChevronLeft, ChevronRight, MoreVertical, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Search, Filter, Calendar, ChevronLeft, ChevronRight, MoreVertical, X, Trash2, Edit } from 'lucide-react';
 import type { Income } from '../types';
 import { cn } from '../lib/utils';
 import { storage } from '../lib/storage';
@@ -7,6 +7,8 @@ import { storage } from '../lib/storage';
 export function IncomePage() {
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeActionId, setActiveActionId] = useState<string | null>(null);
+  const actionMenuRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     clientName: '',
     amount: '',
@@ -16,6 +18,15 @@ export function IncomePage() {
 
   useEffect(() => {
     setIncomes(storage.getIncomes());
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (actionMenuRef.current && !actionMenuRef.current.contains(event.target as Node)) {
+        setActiveActionId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -45,6 +56,20 @@ export function IncomePage() {
       date: new Date().toISOString().split('T')[0],
       status: 'Pending'
     });
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+      const updatedIncomes = incomes.filter(income => income.id !== id);
+      setIncomes(updatedIncomes);
+      storage.saveIncomes(updatedIncomes);
+      setActiveActionId(null);
+    }
+  };
+
+  const toggleActionMenu = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setActiveActionId(activeActionId === id ? null : id);
   };
 
   return (
@@ -87,9 +112,9 @@ export function IncomePage() {
       </div>
 
       {/* Table Section */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden min-h-[400px]">
+        <div className="overflow-visible">
+          <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
               <tr>
                 <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Invoice ID</th>
@@ -97,12 +122,12 @@ export function IncomePage() {
                 <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Tanggal</th>
                 <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Jumlah</th>
-                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right"></th>
+                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right w-20"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {incomes.map((income) => (
-                <tr key={income.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                <tr key={income.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group relative">
                   <td className="px-6 py-5 text-sm font-bold text-primary">
                     {income.invoiceId}
                   </td>
@@ -130,10 +155,34 @@ export function IncomePage() {
                   <td className="px-6 py-5 text-right font-bold text-slate-900 dark:text-white">
                     Rp {income.amount.toLocaleString('id-ID')}
                   </td>
-                  <td className="px-6 py-5 text-right">
-                    <button className="text-slate-400 hover:text-primary transition-colors p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <td className="px-6 py-5 text-right relative">
+                    <button 
+                        onClick={(e) => toggleActionMenu(e, income.id)}
+                        className="text-slate-400 hover:text-primary transition-colors p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
                       <MoreVertical className="w-4 h-4" />
                     </button>
+                    
+                    {/* Floating Action Menu */}
+                    {activeActionId === income.id && (
+                        <div 
+                            ref={actionMenuRef}
+                            className="absolute right-10 top-2 z-50 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 py-2 animate-in fade-in zoom-in-95 duration-200"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 transition-colors">
+                                <Edit className="w-4 h-4" />
+                                Edit Data
+                            </button>
+                            <button 
+                                onClick={() => handleDelete(income.id)}
+                                className="w-full px-4 py-2.5 text-left text-sm font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 flex items-center gap-2 transition-colors"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Hapus
+                            </button>
+                        </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -148,7 +197,7 @@ export function IncomePage() {
           </table>
         </div>
         
-        {/* Pagination */}
+        {/* Pagination - Keep existing code */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <p className="text-sm text-slate-500 dark:text-slate-400">
                 Menampilkan <span className="font-bold text-slate-900 dark:text-white">{incomes.length > 0 ? 1 : 0}-{Math.min(incomes.length, 5)}</span> dari <span className="font-bold text-slate-900 dark:text-white">{incomes.length}</span> data
