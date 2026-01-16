@@ -1,28 +1,64 @@
-import { useState } from 'react';
-import { Plus, Search, Filter, Calendar, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Search, Filter, Calendar, ChevronLeft, ChevronRight, MoreVertical, X } from 'lucide-react';
 import type { Income } from '../types';
 import { cn } from '../lib/utils';
-
-const mockIncomes: Income[] = [
-  { id: '1', invoiceId: '#INV-2023-001', clientName: 'Budi Santoso', amount: 5000000, date: '12 Okt 2023', status: 'Lunas', description: 'Web Development' },
-  { id: '2', invoiceId: '#INV-2023-002', clientName: 'Siti Aminah', amount: 1250000, date: '14 Okt 2023', status: 'Pending', description: 'Logo Design' },
-  { id: '3', invoiceId: '#INV-2023-003', clientName: 'PT. Teknologi Maju', amount: 15700000, date: '15 Okt 2023', status: 'Lunas', description: 'App Development' },
-  { id: '4', invoiceId: '#INV-2023-004', clientName: 'Andi Ramadhan', amount: 450000, date: '18 Okt 2023', status: 'Batal', description: 'Consultation' },
-  { id: '5', invoiceId: '#INV-2023-005', clientName: 'Diana Maria', amount: 2800000, date: '20 Okt 2023', status: 'Lunas', description: 'Social Media Management' },
-];
+import { storage } from '../lib/storage';
 
 export function IncomePage() {
-  const [incomes] = useState<Income[]>(mockIncomes);
+  const [incomes, setIncomes] = useState<Income[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    clientName: '',
+    amount: '',
+    date: new Date().toISOString().split('T')[0],
+    status: 'Pending' as 'Lunas' | 'Pending' | 'Batal'
+  });
+
+  useEffect(() => {
+    setIncomes(storage.getIncomes());
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newIncome: Income = {
+      id: crypto.randomUUID(),
+      invoiceId: `#INV-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+      clientName: formData.clientName,
+      amount: Number(formData.amount),
+      date: formData.date,
+      status: formData.status,
+    };
+
+    const updatedIncomes = [newIncome, ...incomes];
+    setIncomes(updatedIncomes);
+    storage.saveIncomes(updatedIncomes);
+    
+    setIsModalOpen(false);
+    setFormData({
+      clientName: '',
+      amount: '',
+      date: new Date().toISOString().split('T')[0],
+      status: 'Pending'
+    });
+  };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pemasukan</h2>
           <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Pantau dan kelola seluruh catatan pendapatan dari klien Anda secara real-time.</p>
         </div>
-        <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+        >
           <Plus className="w-5 h-5" />
           <span>Tambah Pemasukan</span>
         </button>
@@ -101,6 +137,13 @@ export function IncomePage() {
                   </td>
                 </tr>
               ))}
+              {incomes.length === 0 && (
+                 <tr>
+                    <td colSpan={6} className="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
+                        Belum ada data pemasukan. Klik "Tambah Pemasukan" untuk membuat baru.
+                    </td>
+                 </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -108,17 +151,15 @@ export function IncomePage() {
         {/* Pagination */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-                Menampilkan <span className="font-bold text-slate-900 dark:text-white">1-5</span> dari <span className="font-bold text-slate-900 dark:text-white">156</span> data
+                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{incomes.length > 0 ? 1 : 0}-{Math.min(incomes.length, 5)}</span> dari <span className="font-bold text-slate-900 dark:text-white">{incomes.length}</span> data
             </p>
             <div className="flex items-center gap-2">
                 <button className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary disabled:opacity-50">
                     <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button className="w-8 h-8 rounded-lg bg-primary text-white text-sm font-bold flex items-center justify-center shadow-lg shadow-primary/20">1</button>
-                <button className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm font-medium flex items-center justify-center hover:border-primary hover:text-primary transition-colors">2</button>
-                <button className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm font-medium flex items-center justify-center hover:border-primary hover:text-primary transition-colors">3</button>
-                <span className="text-slate-400 px-1">...</span>
-                <button className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm font-medium flex items-center justify-center hover:border-primary hover:text-primary transition-colors">12</button>
+                <div className="hidden md:flex items-center gap-2">
+                    <button className="w-8 h-8 rounded-lg bg-primary text-white text-sm font-bold flex items-center justify-center shadow-lg shadow-primary/20">1</button>
+                </div>
                 <button className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-primary hover:border-primary transition-colors">
                     <ChevronRight className="w-4 h-4" />
                 </button>
@@ -130,7 +171,9 @@ export function IncomePage() {
        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-emerald-50 dark:bg-emerald-900/10 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
               <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-2">Total Bulan Ini</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Rp 245.800.000</h3>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
+                Rp {incomes.reduce((acc, curr) => acc + curr.amount, 0).toLocaleString('id-ID')}
+              </h3>
               <p className="text-xs font-bold text-emerald-600 dark:text-emerald-500 flex items-center gap-1">
                   <span className="material-symbols-outlined text-sm">trending_up</span>
                   +12.5% dari bulan lalu
@@ -138,15 +181,102 @@ export function IncomePage() {
           </div>
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Invoice Pending</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">24</h3>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
+                {incomes.filter(i => i.status === 'Pending').length}
+              </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">Menunggu konfirmasi pembayaran</p>
           </div>
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Rata-Rata Pendapatan</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Rp 8.200.000</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Dihitung per invoice lunas</p>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Total Transaksi</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">{incomes.length}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Total seluruh pemasukan tercatat</p>
           </div>
       </div>
+
+      {/* Add Income Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-100 dark:border-slate-800">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Tambah Pemasukan Baru</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Nama Klien</label>
+                <input 
+                  type="text" 
+                  name="clientName"
+                  value={formData.clientName}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  placeholder="Contoh: PT. Maju Mundur"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Jumlah (Rp)</label>
+                <input 
+                  type="number" 
+                  name="amount"
+                  value={formData.amount}
+                  onChange={handleInputChange}
+                  required
+                  min="0"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Tanggal</label>
+                  <input 
+                    type="date" 
+                    name="date"
+                    value={formData.date}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Status</label>
+                  <select 
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Lunas">Lunas</option>
+                    <option value="Batal">Batal</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                >
+                  Batal
+                </button>
+                <button 
+                  type="submit" 
+                  className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+                >
+                  Simpan Pemasukan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,33 +1,61 @@
-import { ArrowDown, ArrowUp, Calendar, Plus, Cloud, Printer, PenTool, Wifi, DollarSign } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowDown, ArrowUp, Calendar, Plus, DollarSign, Wallet } from 'lucide-react';
 import { cn } from '../lib/utils';
-// Note: We are using Lucide icons here to match the React environment, 
-// though the original HTML used Material Symbols. 
-// I'll stick to Lucide for the inner content as it's cleaner in React.
-
-const recentTransactions = [
-  {
-    id: '1', date: '24 Oct 2023', description: 'Cloud Hosting Subscription', category: 'Technology', amount: -1200000, type: 'expense',
-    icon: Cloud, iconBg: 'bg-slate-100 dark:bg-slate-800', iconColor: 'text-slate-500', categoryBg: 'bg-slate-100 dark:bg-slate-800', categoryColor: 'text-slate-600 dark:text-slate-400'
-  },
-  {
-    id: '2', date: '23 Oct 2023', description: 'Client Project Payment', category: 'Service', amount: 15000000, type: 'income',
-    icon: DollarSign, iconBg: 'bg-primary/10', iconColor: 'text-primary', categoryBg: 'bg-emerald-100 dark:bg-emerald-900/30', categoryColor: 'text-emerald-700 dark:text-emerald-400'
-  },
-  {
-    id: '3', date: '22 Oct 2023', description: 'Office Supplies', category: 'Inventory', amount: -450000, type: 'expense',
-    icon: Printer, iconBg: 'bg-slate-100 dark:bg-slate-800', iconColor: 'text-slate-500', categoryBg: 'bg-slate-100 dark:bg-slate-800', categoryColor: 'text-slate-600 dark:text-slate-400'
-  },
-  {
-    id: '4', date: '21 Oct 2023', description: 'Freelance Design Work', category: 'Service', amount: 5000000, type: 'income',
-    icon: PenTool, iconBg: 'bg-primary/10', iconColor: 'text-primary', categoryBg: 'bg-emerald-100 dark:bg-emerald-900/30', categoryColor: 'text-emerald-700 dark:text-emerald-400'
-  },
-  {
-    id: '5', date: '20 Oct 2023', description: 'Monthly Internet Bill', category: 'Utilities', amount: -600000, type: 'expense',
-    icon: Wifi, iconBg: 'bg-slate-100 dark:bg-slate-800', iconColor: 'text-slate-500', categoryBg: 'bg-slate-100 dark:bg-slate-800', categoryColor: 'text-slate-600 dark:text-slate-400'
-  },
-];
+import { storage } from '../lib/storage';
+import type { Income, Expense } from '../types';
 
 export function DashboardPage() {
+  const [incomes, setIncomes] = useState<Income[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  useEffect(() => {
+    setIncomes(storage.getIncomes());
+    setExpenses(storage.getExpenses());
+
+    const handleStorageChange = () => {
+      setIncomes(storage.getIncomes());
+      setExpenses(storage.getExpenses());
+    };
+
+    window.addEventListener('storage-change', handleStorageChange);
+    return () => window.removeEventListener('storage-change', handleStorageChange);
+  }, []);
+
+  // Calculate stats
+  const totalIncome = incomes.reduce((acc, curr) => acc + curr.amount, 0);
+  const totalExpense = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+  const balance = totalIncome - totalExpense;
+
+  // Combine and sort transactions for recent list
+  const recentTransactions = [
+    ...incomes.map(i => ({
+      id: i.id,
+      date: i.date,
+      description: i.clientName, // Using client name as description for income
+      category: 'Income',
+      amount: i.amount,
+      type: 'income' as const,
+      icon: DollarSign,
+      iconBg: 'bg-primary/10',
+      iconColor: 'text-primary',
+      categoryBg: 'bg-emerald-100 dark:bg-emerald-900/30',
+      categoryColor: 'text-emerald-700 dark:text-emerald-400'
+    })),
+    ...expenses.map(e => ({
+      id: e.id,
+      date: e.date,
+      description: e.vendor, // Using vendor as description for expense
+      category: e.category,
+      amount: -e.amount,
+      type: 'expense' as const,
+      icon: Wallet,
+      iconBg: 'bg-slate-100 dark:bg-slate-800',
+      iconColor: 'text-slate-500',
+      categoryBg: 'bg-slate-100 dark:bg-slate-800',
+      categoryColor: 'text-slate-600 dark:text-slate-400'
+    }))
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
@@ -60,7 +88,7 @@ export function DashboardPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Total Income</p>
-            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">Rp 45.000.000</h3>
+            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">Rp {totalIncome.toLocaleString('id-ID')}</h3>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center text-xs text-slate-400 font-medium">
             <span className="text-primary font-bold mr-1">Rp 5.2M</span> gained since last month
@@ -77,7 +105,7 @@ export function DashboardPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Total Expense</p>
-            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">Rp 12.400.000</h3>
+            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">Rp {totalExpense.toLocaleString('id-ID')}</h3>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center text-xs text-slate-400 font-medium">
             <span className="text-terracotta font-bold mr-1">Rp 800k</span> saved from last month
@@ -93,7 +121,7 @@ export function DashboardPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-400 dark:text-primary/70 mb-1">Current Balance</p>
-            <h3 className="text-3xl font-extrabold text-white">Rp 32.600.000</h3>
+            <h3 className="text-3xl font-extrabold text-white">Rp {balance.toLocaleString('id-ID')}</h3>
           </div>
           <div className="mt-4 pt-4 border-t border-white/5 flex items-center text-xs text-slate-400 font-medium">
             Managed across <span className="text-white font-bold mx-1">4 accounts</span>
@@ -139,6 +167,13 @@ export function DashboardPage() {
                   </td>
                 </tr>
               ))}
+              {recentTransactions.length === 0 && (
+                 <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                        No recent transactions found.
+                    </td>
+                 </tr>
+              )}
             </tbody>
           </table>
         </div>
