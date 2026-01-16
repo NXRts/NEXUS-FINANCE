@@ -118,6 +118,9 @@ export function IncomePage() {
     setActiveActionId(activeActionId === id ? null : id);
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const filteredIncomes = incomes.filter(income => {
     const matchesSearch = 
         income.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -143,6 +146,18 @@ export function IncomePage() {
             : a.amount - b.amount;
       }
   });
+
+  const totalPages = Math.ceil(filteredIncomes.length / itemsPerPage);
+  const paginatedIncomes = filteredIncomes.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+      if (page >= 1 && page <= totalPages) {
+          setCurrentPage(page);
+      }
+  };
 
   return (
     <div className="space-y-8 relative">
@@ -270,7 +285,7 @@ export function IncomePage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredIncomes.map((income) => (
+              {paginatedIncomes.map((income) => (
                 <tr key={income.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group relative">
                   <td className="px-6 py-4 text-sm font-bold text-primary">
                     {income.invoiceId}
@@ -333,7 +348,7 @@ export function IncomePage() {
                   </td>
                 </tr>
               ))}
-              {filteredIncomes.length === 0 && (
+              {paginatedIncomes.length === 0 && (
                  <tr>
                     <td colSpan={6} className="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
                         {searchQuery ? 'Tidak ada data yang cocok dengan pencarian Anda.' : 'Belum ada data pemasukan. Klik "Tambah Pemasukan" untuk membuat baru.'}
@@ -344,19 +359,44 @@ export function IncomePage() {
           </table>
         </div>
         
-        {/* Pagination - Keep existing code */}
+        {/* Pagination Controls */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{filteredIncomes.length > 0 ? 1 : 0}-{Math.min(filteredIncomes.length, 5)}</span> dari <span className="font-bold text-slate-900 dark:text-white">{filteredIncomes.length}</span> data
+                Menampilkan <span className="font-bold text-slate-900 dark:text-white">
+                    {filteredIncomes.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}
+                    -
+                    {Math.min(currentPage * itemsPerPage, filteredIncomes.length)}
+                </span> dari <span className="font-bold text-slate-900 dark:text-white">{filteredIncomes.length}</span> data
             </p>
             <div className="flex items-center gap-2">
-                <button className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary disabled:opacity-50">
+                <button 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
                     <ChevronLeft className="w-4 h-4" />
                 </button>
                 <div className="hidden md:flex items-center gap-2">
-                    <button className="w-8 h-8 rounded-lg bg-primary text-white text-sm font-bold flex items-center justify-center shadow-lg shadow-primary/20">1</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button 
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={cn(
+                                "w-8 h-8 rounded-lg text-sm font-bold flex items-center justify-center transition-all",
+                                currentPage === page
+                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                    : "border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-primary hover:text-primary"
+                            )}
+                        >
+                            {page}
+                        </button>
+                    ))}
                 </div>
-                <button className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-primary hover:border-primary transition-colors">
+                <button 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-primary hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
                     <ChevronRight className="w-4 h-4" />
                 </button>
             </div>
