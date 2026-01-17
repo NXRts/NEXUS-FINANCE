@@ -7,7 +7,7 @@ const mockUsers: User[] = [
   { 
     id: '1', 
     name: 'Alex Rivera', 
-    email: 'alex.r@fintracker.com', 
+    email: 'alex.r@nexusfinance.com', 
     role: 'admin', 
     department: 'Global Operations', 
     lastLogin: 'Oct 24, 2023 • 14:20', 
@@ -17,7 +17,7 @@ const mockUsers: User[] = [
   { 
     id: '2', 
     name: 'Sarah Chen', 
-    email: 's.chen@fintracker.com', 
+    email: 's.chen@nexusfinance.com', 
     role: 'editor', 
     department: 'Editorial', 
     lastLogin: 'Oct 24, 2023 • 09:15', 
@@ -27,7 +27,7 @@ const mockUsers: User[] = [
   { 
     id: '3', 
     name: 'Marcus Wright', 
-    email: 'm.wright@fintracker.com', 
+    email: 'm.wright@nexusfinance.com', 
     role: 'viewer', 
     department: 'Compliance', 
     lastLogin: 'Oct 22, 2023 • 18:44', 
@@ -37,7 +37,7 @@ const mockUsers: User[] = [
   { 
     id: '4', 
     name: 'Elena Petrova', 
-    email: 'elena.p@fintracker.com', 
+    email: 'elena.p@nexusfinance.com', 
     role: 'editor', 
     department: 'Treasury', 
     lastLogin: 'Oct 21, 2023 • 11:30', 

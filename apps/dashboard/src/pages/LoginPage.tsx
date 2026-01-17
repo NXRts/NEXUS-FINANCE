@@ -22,7 +22,7 @@ export function LoginPage() {
           <div className="w-12 h-12 rounded-lg bg-primary mx-auto flex items-center justify-center text-white mb-4">
             <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">FIN TRACKER</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">NEXUS FINANCE</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Sign in to manage your finances</p>
         </div>
 

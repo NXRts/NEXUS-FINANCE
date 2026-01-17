@@ -22,7 +22,7 @@ export function Sidebar() {
           <Wallet className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-xl font-extrabold tracking-tight text-white leading-tight">FIN TRACKER</h1>
+          <h1 className="text-xl font-extrabold tracking-tight text-white leading-tight">NEXUS FINANCE</h1>
           <p className="text-xs text-slate-400 font-medium tracking-wide">Modern Admin</p>
         </div>
       </div>
@@ -59,20 +59,6 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Pro Plan Card */}
-      <div className="p-6">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700/50 relative overflow-hidden group">
-          {/* Decorative glow */}
-           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
-           
-           <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-2">PRO PLAN</h4>
-           <p className="text-xs text-slate-400 leading-relaxed mb-4">Unlock advanced analytics, export capabilities, and priority support.</p>
-           
-           <button className="w-full py-3 bg-primary text-white text-xs font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:bg-primary/90 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-             <span>Upgrade Now</span>
-           </button>
-        </div>
-      </div>
     </aside>
   );
 }
