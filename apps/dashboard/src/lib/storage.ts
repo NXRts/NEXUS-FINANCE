@@ -7,37 +7,6 @@ const STORAGE_KEYS = {
   USERS: 'finance_users',
 };
 
-const mockIncomes: Income[] = [
-  { id: '1', invoiceId: '#INV-2023-001', source: 'Gaji Bulanan', amount: 5000000, date: '2023-10-12', status: 'Diterima', description: 'Gaji Oktober' },
-  { id: '2', invoiceId: '#INV-2023-002', source: 'Freelance Design', amount: 1250000, date: '2023-10-14', status: 'Tertunda', description: 'Logo Project' },
-  { id: '3', invoiceId: '#INV-2023-003', source: 'Bonus Tahunan', amount: 15700000, date: '2023-10-15', status: 'Diterima', description: 'Bonus Kinerja' },
-  { id: '4', invoiceId: '#INV-2023-004', source: 'Investasi Saham', amount: 450000, date: '2023-10-18', status: 'Diterima', description: 'Dividen' },
-  { id: '5', invoiceId: '#INV-2023-005', source: 'Jual Barang Bekas', amount: 2800000, date: '2023-10-20', status: 'Diterima', description: 'Jual Laptop' },
-];
-
-const mockCategories: Category[] = [
-  { id: '1', name: 'Gaji', type: 'income', status: 'active' },
-  { id: '2', name: 'Bonus', type: 'income', status: 'active' },
-  { id: '3', name: 'Investasi', type: 'income', status: 'active' },
-  { id: '4', name: 'Freelance', type: 'income', status: 'active' },
-  { id: '5', name: 'Makanan', type: 'expense', status: 'active' },
-  { id: '6', name: 'Transportasi', type: 'expense', status: 'active' },
-  { id: '7', name: 'Hiburan', type: 'expense', status: 'active' },
-];
-
-const mockUsers: User[] = [
-  { 
-    id: '1', 
-    name: 'Admin', 
-    email: 'admin@nexusfinance.com', 
-    role: 'admin', 
-    department: 'Management', 
-    lastLogin: 'Oct 24, 2023 • 14:20', 
-    status: 'active',
-    avatar: 'https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff'
-  }
-];
-
 export const storage = {
   getIncomes: (): Income[] => {
     if (typeof window === 'undefined') return [];
@@ -66,7 +35,8 @@ export const storage = {
             }
             
             return newItem as Income;
-        });
+        // Filter out mock data (simple IDs) but keep real data (UUIDs are 36 chars)
+        }).filter((item: Income) => item.id.length > 10); 
 
         return migratedData;
     } catch (e) {
@@ -100,7 +70,10 @@ export const storage = {
                  delete item.vendor;
             }
             return item as Expense;
-        }).filter(item => (item.status as string) !== 'Batal');
+        })
+        .filter((item: Expense) => (item.status as string) !== 'Batal')
+        // Filter out mock data (simple IDs) but keep real data (UUIDs are 36 chars)
+        .filter((item: Expense) => item.id.length > 10);
     } catch {
         return [];
     }
@@ -134,14 +107,25 @@ export const storage = {
   initialize: () => {
     if (typeof window === 'undefined') return;
     
+    // Initialize keys if not present, but don't seed data anymore
     if (!localStorage.getItem(STORAGE_KEYS.INCOMES)) {
-      localStorage.setItem(STORAGE_KEYS.INCOMES, JSON.stringify(mockIncomes));
+      localStorage.setItem(STORAGE_KEYS.INCOMES, JSON.stringify([]));
     }
     if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(mockCategories));
+      // Keep categories for now as they are useful defaults
+      const defaultCategories = [
+          { id: '1', name: 'Gaji', type: 'income', status: 'active' },
+          { id: '2', name: 'Bonus', type: 'income', status: 'active' },
+          { id: '3', name: 'Investasi', type: 'income', status: 'active' },
+          { id: '4', name: 'Freelance', type: 'income', status: 'active' },
+          { id: '5', name: 'Makanan', type: 'expense', status: 'active' },
+          { id: '6', name: 'Transportasi', type: 'expense', status: 'active' },
+          { id: '7', name: 'Hiburan', type: 'expense', status: 'active' },
+      ];
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(defaultCategories));
     }
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(mockUsers));
+       const key = 'user_initialized'; // Dummy check
     }
   }
 };
