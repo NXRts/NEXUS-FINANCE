@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Download, TrendingUp, TrendingDown, Wallet, Zap } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { cn } from '../lib/utils';
+import { storage } from '../lib/storage';
+import type { Expense } from '../types';
 
 const trendData = [
   { name: 'JAN', income: 4000, expense: 2400 },
@@ -12,22 +14,39 @@ const trendData = [
   { name: 'JUN', income: 2390, expense: 3800 },
 ];
 
-const categoryData = [
-  { name: 'Housing', value: 45, color: '#007a6c' }, // Primary
-  { name: 'Food', value: 30, color: '#10b981' },    // Emerald
-  { name: 'Transport', value: 15, color: '#f59e0b' }, // Amber
-  { name: 'Other', value: 10, color: '#cbd5e1' },     // Slate
-];
+const COLORS = ['#007a6c', '#10b981', '#f59e0b', '#cbd5e1', '#ef4444', '#3b82f6'];
 
 const performanceData = [
-    { type: 'Highest Expense Category', value: 'Housing / $5,600', prev: '$5,200', change: '+7.7%', trend: 'up', icon: TrendingDown, color: 'bg-rose-100 text-rose-600' },
-    { type: 'Average Monthly Income', value: '$7,533.00', prev: '$6,800.00', change: '+10.8%', trend: 'up', icon: Wallet, color: 'bg-emerald-100 text-emerald-600' },
+    { type: 'Highest Expense Category', value: 'Technology / $19,750', prev: '$15,200', change: '+29.9%', trend: 'up', icon: TrendingDown, color: 'bg-rose-100 text-rose-600' },
+    { type: 'Average Monthly Income', value: '$24,533.00', prev: '$20,800.00', change: '+10.8%', trend: 'up', icon: Wallet, color: 'bg-emerald-100 text-emerald-600' },
     { type: 'Total Savings Rate', value: '28.4%', prev: '24.1%', change: '+4.3%', trend: 'up', icon: TrendingUp, color: 'bg-blue-100 text-blue-600' },
     { type: 'Utility Efficiency', value: '$420.00', prev: '$450.00', change: '-6.6%', trend: 'down', icon: Zap, color: 'bg-purple-100 text-purple-600' },
 ];
 
 export function ReportsPage() {
   const [dateFilter, setDateFilter] = useState('This Month');
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  useEffect(() => {
+    setExpenses(storage.getExpenses());
+  }, []);
+
+  // Calculate expenses by category
+  const expensesByCategory = expenses.reduce((acc, curr) => {
+    if (!acc[curr.category]) {
+      acc[curr.category] = 0;
+    }
+    acc[curr.category] += curr.amount;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const categoryData = Object.entries(expensesByCategory).map(([name, value], index) => ({
+    name,
+    value,
+    color: COLORS[index % COLORS.length]
+  }));
+
+  const totalExpense = expenses.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
     <div className="space-y-8">
@@ -118,7 +137,9 @@ export function ReportsPage() {
             <div className="flex-1 flex items-center justify-center relative">
                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                      <p className="text-sm text-slate-400 font-medium">Total</p>
-                     <h4 className="text-2xl font-extrabold text-slate-900 dark:text-white">$12,450</h4>
+                     <h4 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                        Rp {(totalExpense / 1000000).toFixed(1)}M
+                     </h4>
                  </div>
                  <div className="w-full h-[250px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -142,7 +163,9 @@ export function ReportsPage() {
                 {categoryData.map((cat) => (
                     <div key={cat.name} className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }}></span>
-                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{cat.name} ({cat.value}%)</span>
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                          {cat.name} ({Math.round((cat.value / totalExpense) * 100)}%)
+                        </span>
                     </div>
                 ))}
             </div>

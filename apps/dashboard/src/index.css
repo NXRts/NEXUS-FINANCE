@@ -23,3 +23,13 @@
     @apply bg-primary/10 text-primary border-l-4 border-primary;
   }
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
