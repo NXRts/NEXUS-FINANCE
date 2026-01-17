@@ -29,25 +29,14 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900 font-manrope">
-      {/* Left Panel - Branding & Visuals */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#1e293b] dark:bg-[#0f172a] relative overflow-hidden flex-col justify-between p-12 text-white">
-        {/* Background Patterns */}
-        <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-        }}></div>
-        
-        {/* Decorative Gradients */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-
-        {/* Header */}
-        <div className="relative z-10 flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
-                <span className="material-symbols-outlined text-white">account_balance_wallet</span>
-            </div>
-            <span className="text-xl font-bold tracking-tight">FIN TRACKER</span>
+    <AuthLayout>
+      <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 p-8">
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 rounded-lg bg-primary mx-auto flex items-center justify-center text-white mb-4">
+            <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
+          </div>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">NEXUS FINANCE</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">Sign in to manage your finances</p>
         </div>
 
         {/* Main Content */}

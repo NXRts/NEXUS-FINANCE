@@ -22,7 +22,7 @@ export function Sidebar() {
           <Wallet className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-xl font-extrabold tracking-tight text-white leading-tight">FIN TRACKER</h1>
+          <h1 className="text-xl font-extrabold tracking-tight text-white leading-tight">NEXUS FINANCE</h1>
           <p className="text-xs text-slate-400 font-medium tracking-wide">Modern Admin</p>
         </div>
       </div>

@@ -2,7 +2,49 @@ import { useState, useEffect } from 'react';
 import { Search, Filter, Download, UserPlus, MoreVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { User } from '../types';
 import { cn } from '../lib/utils';
-import { storage } from '../lib/storage';
+
+const mockUsers: User[] = [
+  { 
+    id: '1', 
+    name: 'Alex Rivera', 
+    email: 'alex.r@nexusfinance.com', 
+    role: 'admin', 
+    department: 'Global Operations', 
+    lastLogin: 'Oct 24, 2023 • 14:20', 
+    status: 'active',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=60'
+  },
+  { 
+    id: '2', 
+    name: 'Sarah Chen', 
+    email: 's.chen@nexusfinance.com', 
+    role: 'editor', 
+    department: 'Editorial', 
+    lastLogin: 'Oct 24, 2023 • 09:15', 
+    status: 'active',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=60'
+  },
+  { 
+    id: '3', 
+    name: 'Marcus Wright', 
+    email: 'm.wright@nexusfinance.com', 
+    role: 'viewer', 
+    department: 'Compliance', 
+    lastLogin: 'Oct 22, 2023 • 18:44', 
+    status: 'inactive',
+    avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&auto=format&fit=crop&q=60'
+  },
+  { 
+    id: '4', 
+    name: 'Elena Petrova', 
+    email: 'elena.p@nexusfinance.com', 
+    role: 'editor', 
+    department: 'Treasury', 
+    lastLogin: 'Oct 21, 2023 • 11:30', 
+    status: 'active',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=60'
+  },
+];
 
 export function UserPage() {
   const [users, setUsers] = useState<User[]>([]);
