@@ -161,7 +161,6 @@ export function IncomePage() {
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
   );
-
   return (
     <div className="space-y-8 pb-20">
       {/* Header Section */}
@@ -330,7 +329,7 @@ export function IncomePage() {
           </table>
         </div>
         
-        {/* Pagination */}
+        {/* Pagination Controls */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <p className="text-sm text-slate-500 dark:text-slate-400">
                 Menampilkan <span className="font-bold text-slate-900 dark:text-white">{filteredIncomes.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}-{Math.min(currentPage * itemsPerPage, filteredIncomes.length)}</span> dari <span className="font-bold text-slate-900 dark:text-white">{filteredIncomes.length}</span> data
@@ -467,6 +466,7 @@ export function IncomePage() {
               </div>
             </form>
           </div>
+
         </div>
       )}
     </div>
