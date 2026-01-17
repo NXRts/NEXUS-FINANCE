@@ -10,11 +10,11 @@ export interface Income {
 
 export interface Expense {
   id: string;
-  vendor: string;
+  invoiceId: string;
   category: string;
   amount: number;
   date: string;
-  status: 'Dibayar' | 'Menunggu' | 'Batal';
+  status: 'Dibayar' | 'Menunggu';
   proofOfPayment?: string;
   description?: string;
 }

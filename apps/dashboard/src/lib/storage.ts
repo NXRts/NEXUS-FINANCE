@@ -81,8 +81,29 @@ export const storage = {
   
   getExpenses: (): Expense[] => {
     if (typeof window === 'undefined') return [];
-    const data = localStorage.getItem(STORAGE_KEYS.EXPENSES);
-    return data ? JSON.parse(data) : [];
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.EXPENSES);
+        if (!data) return [];
+        
+        const parsedData = JSON.parse(data);
+        // Migration: Ensure invoiceId exists
+        return parsedData.map((item: any) => {
+            if (!item.invoiceId) {
+                // Generate a retro-active ID or fallback
+                item.invoiceId = `#EXP-${new Date(item.date).getFullYear()}-${item.id.substring(0, 3).toUpperCase()}`;
+            }
+            if (item.vendor) {
+                 // Append old vendor to description if it exists and isn't already there to avoid data loss
+                 if (!item.description?.includes(item.vendor)) {
+                    item.description = item.description ? `${item.vendor} - ${item.description}` : item.vendor;
+                 }
+                 delete item.vendor;
+            }
+            return item as Expense;
+        }).filter(item => (item.status as string) !== 'Batal');
+    } catch {
+        return [];
+    }
   },
   saveExpenses: (expenses: Expense[]) => {
     if (typeof window === 'undefined') return;
