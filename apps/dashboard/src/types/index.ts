@@ -1,10 +1,10 @@
 export interface Income {
   id: string;
   invoiceId: string;
-  clientName: string;
+  source: string;
   amount: number;
   date: string;
-  status: 'Lunas' | 'Pending' | 'Batal';
+  status: 'Diterima' | 'Tertunda';
   description?: string;
 }
 
