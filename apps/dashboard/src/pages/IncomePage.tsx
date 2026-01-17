@@ -184,6 +184,76 @@ export function IncomePage() {
         </button>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 dark:bg-emerald-900/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 relative z-10">Total Pemasukan (Bulan Ini)</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2 relative z-10">
+                Rp {incomes
+                  .filter(inc => {
+                    const d = new Date(inc.date);
+                    const now = new Date();
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                  })
+                  .reduce((acc, curr) => acc + curr.amount, 0)
+                  .toLocaleString('id-ID')}
+              </h3>
+              <p className="text-xs font-bold text-emerald-600 flex items-center gap-1 relative z-10">
+                  <span className="material-symbols-outlined text-sm">trending_up</span>
+                  +8.4% vs bulan lalu
+              </p>
+          </div>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 dark:bg-blue-900/10 rounded-bl-full -mr-4 -mt-4"></div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 relative z-10">Kategori Terbanyak</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2 relative z-10">
+                {(() => {
+                  const totals: Record<string, number> = {};
+                  incomes.forEach(inc => { totals[inc.source] = (totals[inc.source] || 0) + inc.amount; });
+                  const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+                  return sorted.length > 0 ? sorted[0][0] : '-';
+                })()}
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 relative z-10">
+                Kontribusi terbesar bulan ini
+              </p>
+          </div>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50 dark:bg-purple-900/10 rounded-bl-full -mr-4 -mt-4"></div>
+              <div className="flex justify-between items-start mb-2 relative z-10">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Target Tercapai</p>
+              </div>
+              <div className="flex items-end gap-2 mb-4 relative z-10">
+                <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white leading-none">
+                  {(() => {
+                     const total = incomes
+                      .filter(inc => {
+                        const d = new Date(inc.date);
+                        const now = new Date();
+                        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                      })
+                      .reduce((acc, curr) => acc + curr.amount, 0);
+                     const target = 50000000; // Mock target 50jt
+                     return Math.min(Math.round((total / target) * 100), 100);
+                  })()}%
+                </h3>
+                <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[10px] font-bold rounded-full mb-1">Target: 50jt</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative z-10">
+                  <div className="h-full bg-purple-500 rounded-full" style={{ width: `${(() => {
+                     const total = incomes.filter(inc => {
+                        const d = new Date(inc.date);
+                        const now = new Date();
+                        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                      }).reduce((acc, curr) => acc + curr.amount, 0);
+                     const target = 50000000;
+                     return Math.min(Math.round((total / target) * 100), 100);
+                  })()}%` }}></div>
+              </div>
+          </div>
+      </div>
+
       {/* Filters Section */}
       <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
