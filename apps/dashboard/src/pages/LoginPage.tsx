@@ -14,6 +14,8 @@ const chartData = [
   { value: 7000 },
 ];
 
+import { AuthLayout } from '../components/layout/AuthLayout';
+
 export function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -181,6 +183,6 @@ export function LoginPage() {
               </p>
           </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

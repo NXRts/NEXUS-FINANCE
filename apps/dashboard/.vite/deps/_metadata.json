@@ -1,0 +1,70 @@
+{
+  "hash": "954865cd",
+  "configHash": "2a6058f9",
+  "lockfileHash": "69221c4f",
+  "browserHash": "00daa6f0",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../../../node_modules/.pnpm/react@19.2.3/node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "5309ab17",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../../../node_modules/.pnpm/react@19.2.3/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "28bb35cb",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../../../node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "e5060cc5",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../../../node_modules/.pnpm/react-router-dom@7.12.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "363a244b",
+      "needsInterop": false
+    },
+    "lucide-react": {
+      "src": "../../../../node_modules/.pnpm/lucide-react@0.562.0_react@19.2.3/node_modules/lucide-react/dist/esm/lucide-react.js",
+      "file": "lucide-react.js",
+      "fileHash": "8d8c0696",
+      "needsInterop": false
+    },
+    "recharts": {
+      "src": "../../../../node_modules/.pnpm/recharts@3.6.0_@types+react@19.2.8_react-dom@19.2.3_react@19.2.3__react-is@19.2.3_react@19.2.3_redux@5.0.1/node_modules/recharts/es6/index.js",
+      "file": "recharts.js",
+      "fileHash": "39f1a8c3",
+      "needsInterop": false
+    },
+    "clsx": {
+      "src": "../../../../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs",
+      "file": "clsx.js",
+      "fileHash": "46f1f270",
+      "needsInterop": false
+    },
+    "tailwind-merge": {
+      "src": "../../../../node_modules/.pnpm/tailwind-merge@3.4.0/node_modules/tailwind-merge/dist/bundle-mjs.mjs",
+      "file": "tailwind-merge.js",
+      "fileHash": "2ee76889",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-TPAOJBBY": {
+      "file": "chunk-TPAOJBBY.js"
+    },
+    "chunk-677POAAG": {
+      "file": "chunk-677POAAG.js"
+    },
+    "chunk-EVNWH6M7": {
+      "file": "chunk-EVNWH6M7.js"
+    },
+    "chunk-G3PMV62Z": {
+      "file": "chunk-G3PMV62Z.js"
+    }
+  }
+}

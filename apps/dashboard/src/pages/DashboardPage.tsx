@@ -31,7 +31,7 @@ export function DashboardPage() {
     ...incomes.map(i => ({
       id: i.id,
       date: i.date,
-      description: i.clientName, // Using client name as description for income
+      description: i.source, // Using client name as description for income
       category: 'Income',
       amount: i.amount,
       type: 'income' as const,

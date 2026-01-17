@@ -25,6 +25,19 @@ const mockCategories: Category[] = [
   { id: '7', name: 'Hiburan', type: 'expense', status: 'active' },
 ];
 
+const mockUsers: User[] = [
+  { 
+    id: '1', 
+    name: 'Admin', 
+    email: 'admin@nexusfinance.com', 
+    role: 'admin', 
+    department: 'Management', 
+    lastLogin: 'Oct 24, 2023 • 14:20', 
+    status: 'active',
+    avatar: 'https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff'
+  }
+];
+
 export const storage = {
   getIncomes: (): Income[] => {
     if (typeof window === 'undefined') return [];
@@ -96,6 +109,7 @@ export const storage = {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
   },
 
+
   initialize: () => {
     if (typeof window === 'undefined') return;
     
@@ -104,7 +118,9 @@ export const storage = {
     }
     if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
       localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(mockCategories));
-
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(mockUsers));
     }
   }
 };
