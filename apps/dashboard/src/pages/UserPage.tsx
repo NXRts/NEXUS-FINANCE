@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, Download, UserPlus, MoreVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { User } from '../types';
 import { cn } from '../lib/utils';
@@ -47,8 +47,12 @@ const mockUsers: User[] = [
 ];
 
 export function UserPage() {
-  const [users] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setUsers(storage.getUsers());
+  }, []);
 
   const getRoleColor = (role: string) => {
     switch(role) {

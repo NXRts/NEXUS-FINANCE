@@ -34,6 +34,10 @@ export function CategoryPage() {
     setCategories(storage.getCategories());
   }, []);
 
+  useEffect(() => {
+    setCategories(storage.getCategories());
+  }, []);
+
   const filteredCategories = categories.filter(c => c.type === activeTab);
 
   const getIcon = (iconName: string) => {
