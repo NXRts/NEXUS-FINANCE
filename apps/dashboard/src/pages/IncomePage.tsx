@@ -9,6 +9,7 @@ export function IncomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeActionId, setActiveActionId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   
   // Filter & Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,6 +23,7 @@ export function IncomePage() {
 
   const actionMenuRef = useRef<HTMLDivElement>(null);
   const filterMenuRef = useRef<HTMLDivElement>(null);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     source: '',
@@ -45,6 +47,9 @@ export function IncomePage() {
       }
       if (filterMenuRef.current && !filterMenuRef.current.contains(event.target as Node)) {
         setIsFilterOpen(false);
+      }
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
+        setIsCategoryOpen(false);
       }
     };
 
@@ -384,47 +389,82 @@ export function IncomePage() {
 
               <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Kategori Pemasukan</label>
-                <div className="relative">
-                  <select 
-                    required
-                    value={formData.source}
-                    onChange={(e) => setFormData({...formData, source: e.target.value})}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none"
+                <div className="relative" ref={categoryDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                    className={cn(
+                      "w-full px-4 py-3 text-left bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm transition-all flex items-center justify-between",
+                      isCategoryOpen ? "ring-2 ring-primary/20" : "",
+                      !formData.source ? "text-slate-400" : "text-slate-900 dark:text-white font-medium"
+                    )}
                   >
-                    <option value="" disabled>Pilih Kategori</option>
-                    {categories.map(category => (
-                      <option key={category.id} value={category.name}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                    <ChevronRight className="w-4 h-4 rotate-90" />
-                  </div>
+                    <span>{formData.source || 'Pilih Kategori'}</span>
+                    <ChevronRight className={cn("w-4 h-4 text-slate-400 transition-transform duration-200", isCategoryOpen ? "rotate-[270deg]" : "rotate-90")} />
+                  </button>
+
+                  {isCategoryOpen && (
+                    <div className="absolute z-10 w-full mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+                      <div className="p-1">
+                        {categories.map(category => (
+                          <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => {
+                              setFormData({...formData, source: category.name});
+                              setIsCategoryOpen(false);
+                            }}
+                            className={cn(
+                              "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors flex items-center justify-between",
+                              formData.source === category.name 
+                                ? "bg-primary/10 text-primary font-bold" 
+                                : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            )}
+                          >
+                            <span>{category.name}</span>
+                            {formData.source === category.name && <Check className="w-4 h-4" />}
+                          </button>
+                        ))}
+                        {categories.length === 0 && (
+                          <div className="px-3 py-4 text-center text-xs text-slate-400">
+                            Belum ada kategori.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Jumlah (Rp)</label>
-                   <input 
-                    type="number" 
-                    required
-                    placeholder="0"
-                    value={formData.amount}
-                    onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
+                   <div className="relative">
+                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">Rp</span>
+                     <input 
+                      type="number" 
+                      required
+                      placeholder="0"
+                      value={formData.amount}
+                      onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                   </div>
                 </div>
                 <div>
                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tanggal</label>
-                   <input 
-                    type="date" 
-                    required
-                    value={formData.date}
-                    onChange={(e) => setFormData({...formData, date: e.target.value})}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
+                   <div className="relative">
+                     <input 
+                      type="date" 
+                      required
+                      value={formData.date}
+                      onChange={(e) => setFormData({...formData, date: e.target.value})}
+                      className="w-full pl-4 pr-10 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none [color-scheme:light] dark:[color-scheme:dark] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                    />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                   </div>
                 </div>
               </div>
 
