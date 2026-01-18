@@ -125,7 +125,7 @@ export const storage = {
       localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(defaultCategories));
     }
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-       const key = 'user_initialized'; // Dummy check
+       // const key = 'user_initialized'; // Dummy check - Removed to fix lint
     }
   }
 };
