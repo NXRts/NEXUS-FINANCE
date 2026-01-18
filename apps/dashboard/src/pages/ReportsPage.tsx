@@ -7,6 +7,31 @@ import type { Expense, Income } from '../types';
 
 const COLORS = ['#007a6c', '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#f97316'];
 
+// Custom Tooltip for Area Chart
+const CustomAreaTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700">
+                <p className="text-xs font-bold text-slate-400 uppercase mb-2">{label}</p>
+                <div className="space-y-2">
+                    {payload.map((entry: any, index: number) => (
+                        <div key={index} className="flex items-center gap-3 min-w-[150px]">
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                            <span className="text-sm font-medium text-slate-600 dark:text-slate-300 capitalize flex-1">
+                                {entry.name}
+                            </span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white">
+                                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(entry.value)}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    return null;
+};
+
 export function ReportsPage() {
   const [dateFilter, setDateFilter] = useState('Last 6 Months');
   const [showIncome, setShowIncome] = useState(true);
@@ -96,15 +121,12 @@ export function ReportsPage() {
   }, [incomes, expenses, dateFilter]);
 
 
-  // 2. Expenses by Category (Overall or filtered by time?) 
-  // Let's make it reflect the current `dateFilter` logic roughly, or just "All Time" for broader view?
-  // Usually reports match the filter. Let's filter expenses by the range in `trendData`.
+  // 2. Expenses by Category
   const categoryData = useMemo(() => {
       const activeMonths = new Set(trendData.map(d => d.sortKey));
       
       const filteredExpenses = expenses.filter(e => {
         if (dateFilter === 'This Month') {
-             // For daily view, match string keys YYYY-MM-DD
              return activeMonths.has(e.date.split('T')[0]);
         }
         return activeMonths.has(getMonthKey(e.date));
@@ -115,15 +137,13 @@ export function ReportsPage() {
           catMap[e.category] = (catMap[e.category] || 0) + e.amount;
       });
 
-      // const total = Object.values(catMap).reduce((a, b) => a + b, 0);
-
       return Object.entries(catMap)
         .map(([name, value], index) => ({
             name,
             value,
             color: COLORS[index % COLORS.length]
         }))
-        .sort((a, b) => b.value - a.value); // Sort highest first
+        .sort((a, b) => b.value - a.value); 
   }, [expenses, trendData]);
 
   const totalFilteredExpense = categoryData.reduce((acc, curr) => acc + curr.value, 0);
@@ -158,7 +178,7 @@ export function ReportsPage() {
       };
 
       const getTrend = (curr: number, prev: number) => curr >= prev ? 'up' : 'down';
-      const getInverseTrend = (curr: number, prev: number) => curr <= prev ? 'up' : 'down'; // Less expense is 'up' (good)
+      const getInverseTrend = (curr: number, prev: number) => curr <= prev ? 'up' : 'down'; 
 
       return [
           { 
@@ -175,8 +195,7 @@ export function ReportsPage() {
               value: formatCompactCurrency(currExpense), 
               prev: formatCompactCurrency(prevExpense), 
               change: getChange(currExpense, prevExpense), 
-              trend: getInverseTrend(currExpense, prevExpense), // Lower is better visual, but technically 'up' arrow might mean increase. Let's use standard: Green if good. 
-              // Actually implementation below uses `item.trend === 'up'` -> green. So if expense dropped, we want 'up' (green).
+              trend: getInverseTrend(currExpense, prevExpense), 
               isExpense: true,
               icon: TrendingDown, 
               color: 'bg-rose-100 text-rose-600' 
@@ -187,7 +206,7 @@ export function ReportsPage() {
               prev: formatCompactCurrency(prevSavings), 
               change: getChange(currSavings, prevSavings), 
               trend: getTrend(currSavings, prevSavings),
-              icon: Calendar, // Using Calendar as 'Month End Result' icon
+              icon: Calendar, 
               color: 'bg-blue-100 text-blue-600' 
           },
           { 
@@ -219,8 +238,6 @@ export function ReportsPage() {
       link.click();
       document.body.removeChild(link);
   };
-
-
 
   return (
     <div className="space-y-8">
@@ -302,10 +319,7 @@ export function ReportsPage() {
                             tickFormatter={(value) => formatCompactCurrency(value)}
                             width={80}
                         />
-                        <Tooltip 
-                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                            formatter={(value: any) => formatCurrency(value)}
-                        />
+                        <Tooltip content={<CustomAreaTooltip />} cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '5 5' }} />
                         {showIncome && (
                             <Area type="monotone" dataKey="income" stroke="#007a6c" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
                         )}
@@ -377,25 +391,50 @@ export function ReportsPage() {
             <div className="h-[150px] w-full flex items-end justify-between gap-2">
                 {trendData.map((data, i) => {
                     const net = data.income - data.expense;
-                    // Find max absolute net value to scale bars relative to max, avoiding div by zero
                     const maxNet = Math.max(...trendData.map(d => Math.abs(d.income - d.expense)), 1); 
                     const heightPercent = Math.min((Math.abs(net) / maxNet) * 100, 100);
                     
                     const isPositive = net >= 0;
 
-                    return (
+                     return (
                     <div key={i} className="w-full bg-slate-50 dark:bg-slate-800 rounded-t-lg relative group h-full flex items-end justify-center">
+                         {/* Hover Tooltip - Styled to match Image 2 */}
+                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 bg-white dark:bg-slate-900 p-3 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 text-xs transform translate-y-2 group-hover:translate-y-0 filter drop-shadow-lg">
+                            <p className="font-extrabold text-slate-900 dark:text-white uppercase mb-2 text-[10px] tracking-wider">{data.name}</p>
+                            <div className="space-y-1.5">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-400 font-medium">In</span> 
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm tracking-tight">{formatCompactCurrency(data.income)}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-400 font-medium">Out</span> 
+                                    <span className="text-rose-500 dark:text-rose-400 font-bold text-sm tracking-tight">{formatCompactCurrency(data.expense)}</span>
+                                </div>
+                                <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                    <span className="text-slate-500 dark:text-slate-400 font-bold">Net</span> 
+                                    <span className={cn("text-sm font-bold tracking-tight", isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400")}>
+                                        {formatCompactCurrency(net)}
+                                    </span>
+                                </div>
+                             </div>
+                             {/* Arrow */}
+                             <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white dark:border-t-slate-900 filter drop-shadow-sm"></div>
+                         </div>
+
                         <div 
                             className={cn(
                                 "w-full transition-all rounded-t-lg mx-auto min-h-[4px]",
                                 isPositive 
-                                    ? "bg-emerald-500/20 group-hover:bg-emerald-500 dark:bg-emerald-500/10" 
-                                    : "bg-rose-500/20 group-hover:bg-rose-500 dark:bg-rose-500/10"
+                                    ? "bg-emerald-500 text-emerald-500" // Solid color per Image 2
+                                    : "bg-rose-500 text-rose-500"
                             )}
-                            style={{ width: '60%', height: `${heightPercent}%` }}
-                            title={formatCurrency(net)}
+                            style={{ 
+                                width: '100%',
+                                maxWidth: '80%',
+                                height: `${heightPercent}%` 
+                            }}
                         ></div>
-                         <p className="absolute -bottom-6 text-[10px] font-bold text-slate-400 uppercase">
+                         <p className="absolute -bottom-8 text-[10px] font-bold text-slate-400 uppercase group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                              {data.name}
                          </p>
                     </div>
@@ -424,19 +463,11 @@ export function ReportsPage() {
                     {kpiData.map((item, index) => {
                         const Icon = item.icon;
                         
-                        // Logic for color: 
-                        // If it's expense: Up trend = Bad (Red), Down trend = Good (Green)
-                        // But we decided "Up" arrow means "Increase".
-                        // Change Color:
-                        // Normal: Increase (+) -> Green, Decrease (-) -> Red
-                        // Expense: Increase (+) -> Red, Decrease (-) -> Green
-                        
                         let changeColor = item.change.includes('+') ? "text-emerald-500" : "text-rose-500";
                         if (item.isExpense) {
                             changeColor = item.change.includes('+') ? "text-rose-500" : "text-emerald-500";
                         }
                         
-                        // Trend Icon color follows the same logic
                         let trendColor = item.trend === 'up' ? "text-emerald-500" : "text-rose-500";
                          if (item.isExpense) {
                             trendColor = item.trend === 'up' ? "text-rose-500" : "text-emerald-500";
