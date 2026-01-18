@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 import { LayoutDashboard, TrendingUp, TrendingDown, Layers, User, Wallet } from 'lucide-react';
@@ -13,6 +14,14 @@ const navItems = [
 
 export function Sidebar() {
   const location = useLocation();
+
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Simple fetch for demo
+    const users = JSON.parse(localStorage.getItem('finance_users') || '[]');
+    if (users.length > 0) setUser(users[0]);
+  }, []);
 
   return (
     <aside className="w-72 flex-shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col h-full transition-all duration-300">
@@ -58,6 +67,20 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* User Profile Widget */}
+      {user && (
+        <div className="p-4 border-t border-slate-800">
+            <Link to="/profile" className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 hover:bg-slate-800 transition-all group">
+                <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover border-2 border-slate-700 group-hover:border-slate-500 transition-colors" />
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-white truncate">{user.name}</p>
+                    <p className="text-xs text-slate-400 truncate">{user.role}</p>
+                </div>
+                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+            </Link>
+        </div>
+      )}
     </aside>
   );
 }

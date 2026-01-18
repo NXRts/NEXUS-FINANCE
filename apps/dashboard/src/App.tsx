@@ -10,6 +10,7 @@ import { IncomePage } from "./pages/IncomePage";
 import { ExpensePage } from "./pages/ExpensePage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { UserPage } from "./pages/UserPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { ReportsPage } from './pages/ReportsPage';
 
 function App() {
@@ -50,6 +51,11 @@ function App() {
         <Route path="/user" element={
             <DashboardLayout>
                 <UserPage />
+            </DashboardLayout>
+        } />
+        <Route path="/profile" element={
+            <DashboardLayout>
+                <ProfilePage />
             </DashboardLayout>
         } />
         {/* Redirect unknown routes to login or dashboard. 
