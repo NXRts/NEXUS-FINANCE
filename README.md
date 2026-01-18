@@ -58,7 +58,7 @@ Follow these steps to set up the project locally on your machine.
 ### Prerequisites
 
 -   **Node.js** (v18 or higher)
--   **npm** or **yarn**
+-   **pnpm** (recommended) or npm/yarn
 
 ### Installation
 
@@ -70,16 +70,21 @@ Follow these steps to set up the project locally on your machine.
 
 2.  **Install Dependencies**
     ```bash
-    npm install
+    pnpm install
     ```
 
 3.  **Start the Development Server**
     ```bash
-    npm run dev
+    pnpm dev
     ```
 
 4.  **Open in Browser**
     Visit `http://localhost:5173` to see the app in action!
+
+### 💾 Data Persistence
+All data is stored in your browser's **LocalStorage**. 
+- To **reset** your data completely, clear your browser's application storage or run `localStorage.clear()` in the console.
+- Data will not sync across different browsers or devices.
 
 ---
 
