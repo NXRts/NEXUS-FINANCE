@@ -36,7 +36,7 @@ export const storage = {
             
             return newItem as Income;
         // Filter out mock data (simple IDs) but keep real data (UUIDs are 36 chars)
-        }).filter((item: Income) => item.id.length > 10); 
+        }); // Removed filter for ID length to show all data 
 
         return migratedData;
     } catch (e) {
@@ -73,7 +73,7 @@ export const storage = {
         })
         .filter((item: Expense) => (item.status as string) !== 'Batal')
         // Filter out mock data (simple IDs) but keep real data (UUIDs are 36 chars)
-        .filter((item: Expense) => item.id.length > 10);
+        ;
     } catch {
         return [];
     }

@@ -9,6 +9,8 @@ const COLORS = ['#007a6c', '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'
 
 export function ReportsPage() {
   const [dateFilter, setDateFilter] = useState('Last 6 Months');
+  const [showIncome, setShowIncome] = useState(true);
+  const [showExpense, setShowExpense] = useState(true);
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
@@ -218,6 +220,8 @@ export function ReportsPage() {
       document.body.removeChild(link);
   };
 
+
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -255,29 +259,26 @@ export function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Income vs Expense Trends */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div className="flex justify-between items-start mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <div>
                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Income vs. Expense Trends</h3>
-                   <div className="flex items-center gap-4 mt-2">
-                       <div className="flex items-center gap-2">
+                   <div className="flex flex-wrap items-center gap-4 mt-2">
+                       <button 
+                         onClick={() => setShowIncome(!showIncome)}
+                         className={cn("flex items-center gap-2 transition-opacity", !showIncome && "opacity-50")}
+                       >
                            <span className="w-3 h-3 rounded-full bg-primary/20 border-2 border-primary"></span>
                            <span className="text-xs font-bold text-slate-500">Income</span>
-                       </div>
-                       <div className="flex items-center gap-2">
+                       </button>
+                       <button 
+                         onClick={() => setShowExpense(!showExpense)}
+                         className={cn("flex items-center gap-2 transition-opacity", !showExpense && "opacity-50")}
+                        >
                            <span className="w-3 h-3 rounded-full bg-slate-100 border-2 border-slate-300 dark:bg-slate-800 dark:border-slate-600"></span>
                            <span className="text-xs font-bold text-slate-500">Expenses</span>
-                       </div>
+                       </button>
                    </div>
                 </div>
-                {/* 
-                <div className="text-right">
-                    <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">$45,200.00</h3>
-                    <p className="text-xs font-bold text-emerald-500 flex items-center justify-end gap-1">
-                        <TrendingUp className="w-3 h-3" />
-                         +12.5%
-                    </p>
-                </div> 
-                */}
             </div>
             <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -294,13 +295,23 @@ export function ReportsPage() {
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
-                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                        <YAxis 
+                            axisLine={false} 
+                            tickLine={false} 
+                            tick={{fill: '#94a3b8', fontSize: 12}} 
+                            tickFormatter={(value) => formatCompactCurrency(value)}
+                            width={80}
+                        />
                         <Tooltip 
                             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                             formatter={(value: any) => formatCurrency(value)}
                         />
-                        <Area type="monotone" dataKey="income" stroke="#007a6c" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
-                        <Area type="monotone" dataKey="expense" stroke="#cbd5e1" strokeDasharray="5 5" strokeWidth={2} fillOpacity={1} fill="url(#colorExpense)" />
+                        {showIncome && (
+                            <Area type="monotone" dataKey="income" stroke="#007a6c" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
+                        )}
+                        {showExpense && (
+                            <Area type="monotone" dataKey="expense" stroke="#cbd5e1" strokeDasharray="5 5" strokeWidth={2} fillOpacity={1} fill="url(#colorExpense)" />
+                        )}
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
