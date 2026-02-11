@@ -240,12 +240,12 @@ export function ExpensePage() {
     <div className="space-y-8 pb-20">
       {/* Header Section */}
       <div>
-        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pengelolaan Pengeluaran</h2>
-        <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Monitor dan kelola seluruh biaya operasional bisnis Anda.</p>
+        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pengelolaan Pengeluaran</h2>
+        <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 font-medium mt-1">Monitor dan kelola seluruh biaya operasional bisnis Anda.</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-24 h-24 bg-terracotta/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 relative z-10">Total Pengeluaran (Bulan Ini)</p>
@@ -273,7 +273,7 @@ export function ExpensePage() {
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Budget Terpakai</p>
           </div>
           <div className="flex items-end gap-2 mb-4 relative z-10">
-            <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white leading-none">{stats.budgetUsedPercent.toFixed(0)}%</h3>
+            <h3 className="text-3xl xs:text-4xl font-extrabold text-slate-900 dark:text-white leading-none">{stats.budgetUsedPercent.toFixed(0)}%</h3>
             <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded-full mb-1">
               Sisa: {(100 - stats.budgetUsedPercent).toFixed(0)}%
             </span>
@@ -376,12 +376,12 @@ export function ExpensePage() {
           <table className="w-full text-left">
             <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
               <tr>
-                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">ID Transaksi</th>
-                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Kategori</th>
-                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Tanggal</th>
-                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Jumlah</th>
-                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right"></th>
+                <th className="px-4 md:px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">ID Transaksi</th>
+                <th className="px-4 md:px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:table-cell">Kategori</th>
+                <th className="px-4 md:px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Tanggal</th>
+                <th className="px-4 md:px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Jumlah</th>
+                <th className="px-4 md:px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                <th className="px-4 md:px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">

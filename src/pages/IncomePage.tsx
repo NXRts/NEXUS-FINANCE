@@ -172,12 +172,12 @@ export function IncomePage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pemasukan</h2>
-          <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Pantau dan kelola seluruh catatan pendapatan pribadi Anda.</p>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pemasukan</h2>
+          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 font-medium mt-1">Pantau dan kelola seluruh catatan pendapatan pribadi Anda.</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+          className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all w-full md:w-auto"
         >
           <Plus className="w-5 h-5" />
           <span>Tambah Pemasukan</span>
@@ -185,7 +185,7 @@ export function IncomePage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 dark:bg-emerald-900/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 relative z-10">Total Pemasukan (Bulan Ini)</p>
@@ -225,7 +225,7 @@ export function IncomePage() {
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Target Tercapai</p>
           </div>
           <div className="flex items-end gap-2 mb-4 relative z-10">
-            <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white leading-none">
+            <h3 className="text-3xl xs:text-4xl font-extrabold text-slate-900 dark:text-white leading-none">
               {(() => {
                 const total = incomes
                   .filter(inc => {
@@ -334,27 +334,27 @@ export function IncomePage() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
               <tr>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">ID Transaksi</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Sumber</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Tanggal</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Jumlah</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right"></th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:table-cell">ID Transaksi</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Sumber</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Tanggal</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Jumlah</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {paginatedIncomes.map((income) => (
                 <tr key={income.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                  <td className="px-6 py-4 text-sm font-bold text-primary">
+                  <td className="px-4 md:px-6 py-4 text-sm font-bold text-primary hidden sm:table-cell">
                     {income.invoiceId}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 md:px-6 py-4">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">{income.source}</span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+                  <td className="px-4 md:px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-medium hidden md:table-cell">
                     {income.date}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 md:px-6 py-4">
                     <span className={cn(
                       "px-3 py-1 text-xs font-bold rounded-full",
                       income.status === 'Diterima' && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -363,10 +363,10 @@ export function IncomePage() {
                       {income.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">
+                  <td className="px-4 md:px-6 py-4 text-right font-bold text-slate-900 dark:text-white">
                     Rp {income.amount.toLocaleString('id-ID')}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 md:px-6 py-4 text-right">
                     <div className="relative">
                       <button
                         onClick={() => setActiveActionId(activeActionId === income.id ? null : income.id)}
