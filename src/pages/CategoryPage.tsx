@@ -118,12 +118,12 @@ export function CategoryPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Kategori</h2>
-          <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Kelola kategori pemasukan dan pengeluaran Anda.</p>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Kategori</h2>
+          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 font-medium mt-1">Kelola kategori pemasukan dan pengeluaran Anda.</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all"
+          className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all w-full md:w-auto"
         >
           <Plus className="w-5 h-5" />
           <span>Tambah Kategori</span>
@@ -131,8 +131,8 @@ export function CategoryPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-slate-200 dark:border-slate-800">
-        <div className="flex gap-8">
+      <div className="border-b border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-4 md:gap-8 min-w-max">
           <button
             onClick={() => setActiveTab('income')}
             className={cn(
@@ -174,7 +174,7 @@ export function CategoryPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {filteredCategories.map((category) => (
             <div
               key={category.id}
